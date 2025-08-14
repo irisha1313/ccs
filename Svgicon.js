@@ -1,0 +1,103 @@
+import React from "react";
+import { connect } from "react-redux";
+import PropTypes from 'prop-types';
+import { Platform } from 'react-native';
+import Svg from 'react-native-svg';
+
+import svgs from '../assets/svgs';
+import { Colors, Layout } from '../constants';
+
+const SvgIconLib = (props) => {
+  if (!props.name) {
+      return null;
+  }
+
+  const name = props.svgs[`${props.name}.${Platform.OS}`] || props.svgs[props.name];
+
+  if (!name) {
+      return null;
+  }
+
+  const height = props.height && props.height.toString();
+  const width = props.width && props.width.toString();
+  const strokeWidth = props.strokeWidth && props.strokeWidth.toString();
+
+  const isSimple = React.isValidElement(name);
+  const svgEl = isSimple ? name : name.svg;
+
+  let viewBox;
+
+  if (props.viewBox && props.viewBox !== SvgIconLib.defaultProps.viewBox) {
+      viewBox = props.viewBox;
+  }
+  else if (!isSimple && name.viewBox) {
+      viewBox = name.viewBox;
+  }
+  else if (props.defaultViewBox) {
+      viewBox = props.defaultViewBox;
+  }
+  else {
+      viewBox = SvgIconLib.defaultProps.viewBox;
+  }
+
+  return (
+      <Svg height={height} width={width} viewBox={viewBox} style={props.style}>
+          {React.cloneElement(svgEl, {
+              fill: props.fill,
+              fillRule: props.fillRule,
+              stroke: props.stroke,
+              strokeWidth: strokeWidth
+          })}
+      </Svg>
+  );
+};
+
+SvgIconLib.defaultProps = {
+  fill: '#000',
+  fillRule: 'evenodd',
+  height: '44',
+  width: '44',
+  viewBox: '0 0 100 100'
+};
+
+SvgIconLib.propTypes = {
+  fill: PropTypes.string.isRequired,
+  fillRule: PropTypes.string,
+  height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  name: PropTypes.string.isRequired,
+  stroke: PropTypes.string,
+  strokeWidth: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  style: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.number]),
+  svgs: PropTypes.object.isRequired,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
+  viewBox: PropTypes.string
+};
+
+
+class Svgicon extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <SvgIconLib
+        width={this.props.width || Layout.iconSize}
+        height={this.props.height || Layout.iconSize}
+        fill={this.props.color || Colors.icon}
+        name={this.props.name}
+        svgs={svgs}
+      />
+    );
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {};
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {};
+};
+
+// Exports
+export default connect(mapStateToProps, mapDispatchToProps)(Svgicon);
