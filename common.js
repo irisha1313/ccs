@@ -1,41 +1,32 @@
-import React from 'react';
-import { Toast, Icon } from 'native-base';
-import { Strings } from '../constants';
+// Initial State
+import { initialState } from './initial';
+import { ActionTypes } from '../constants/';
 
-const showToast = (msg, type) => {
-  if (msg == '') return;
-  Toast.show({
-    text: msg,
-    buttonText: 'Okay',
-    type: type || 'default',
-    duration: 4000,
-    position: 'top',
-    style: { marginTop: 25 },
-  });
-};
-const getCurrentRoute = (state) => {
-  const findCurrentRoute = (navState) => {
-    if (navState.index !== undefined) {
-      return findCurrentRoute(navState.routes[navState.index]);
+// Reducers (Modifies The State And Returns A New State)
+const common = (state = initialState.common, action) => {
+  switch (action.type) {
+    case ActionTypes.RESETSTATE: {
+      return initialState.common
     }
-    return navState.routeName;
-  };
-  return findCurrentRoute(state.nav);
+    case ActionTypes.LOADING: {
+      return {
+        ...state,
+        isLoading: action.isLoading,
+      }
+    }
+    case ActionTypes.SHOWMODAL: {
+      return {
+        ...state,
+        showModal: action.showModal,
+      }
+    }
+
+    // Default
+    default: {
+      return state;
+    }
+  }
 };
 
-const getFontIcon = (name, style = {}, size = 12, type = 'AntDesign') => {
-  return (
-    <Icon
-      name={name}
-      fontSize={size}
-      type={type}
-      style={[{ color: '#ffffff' }, style]}
-    />
-  );
-};
-
-const getLanguage = (code) => {
-  return Strings[code || 0];
-};
-
-export { getLanguage, showToast, getCurrentRoute, getFontIcon };
+// Exports
+export default common;
